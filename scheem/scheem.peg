@@ -1,0 +1,18 @@
+start =
+    expression
+
+validchar = 
+	[0-9a-zA-Z_?!+\-=@#$%^&*/.]
+
+atom =
+    chars:validchar+
+        { return chars.join(""); }
+
+spacedexpression = 
+	" " a:expression
+		{return a;}
+
+expression =
+	a:atom
+    / "(" a:expression b:spacedexpression* ")"
+    	{return [a].concat(b)}
