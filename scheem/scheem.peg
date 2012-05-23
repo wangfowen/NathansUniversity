@@ -1,18 +1,21 @@
 start =
-    expression
+    expression+
 
 validchar = 
 	[0-9a-zA-Z_?!+\-=@#$%^&*/.]
+
+whitespace =
+	([ \t\r\n] / comment)*
 
 atom =
     chars:validchar+
         { return chars.join(""); }
 
-spacedexpression = 
-	" " a:expression
-		{return a;}
+comment = 
+	";;" (!"\n" .)*
 
 expression =
-	a:atom
-    / "(" a:expression b:spacedexpression* ")"
-    	{return [a].concat(b)}
+	whitespace a:atom whitespace
+		{return a;}
+    / whitespace "(" whitespace a:expression+ whitespace ")" whitespace
+    	{return a;}
