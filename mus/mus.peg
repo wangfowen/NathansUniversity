@@ -1,0 +1,23 @@
+start = 
+	expression
+
+note =
+	a:pitch b:duration
+		{ return { tag: 'note', pitch: a, dur: b}; }
+
+pitch =
+	a:[a-gA-G] b:[a-gA-G]? c:[0-9]?
+		{ return c ? a.concat(b).concat(c) : a.concat(b).concat(4); }
+
+duration =
+	a:[+-]*
+		{	var count = 0;
+			for (var i=0; i<a.length; i++) {
+				if (a[i] === "+") { count++; } 
+				else if (a[i] === "-") { count--; }
+			}
+			return ((count >= 0) ? (250 * Math.pow(2, count)) : (250 / Math.pow(2, Math.abs(count)))); }
+
+expression =
+	a:note " "*
+		{ return a; }
