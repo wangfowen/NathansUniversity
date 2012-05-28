@@ -1,0 +1,23 @@
+start =
+    expression
+
+validchar = 
+	[0-9a-zA-Z_?!+\-=<>@#$%^&*/.]
+
+whitespace =
+	([ \t\r\n] / comment)*
+
+atom =
+    chars:validchar+
+        { return chars.join(""); }
+
+comment = 
+	";;" (!"\n" .)*
+
+expression =
+	whitespace a:atom whitespace
+		{ if (parseInt(a)) { return parseInt(a, 10); } 
+		  else { return a; } }
+    / whitespace quote:"'"? "(" whitespace a:expression+ whitespace ")" whitespace
+    	{	if (quote.length > 0) { return ['quote', a]; } 
+    		else { return a; } }

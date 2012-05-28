@@ -3,7 +3,7 @@ var assert = require('assert');
 var fs = require('fs');
 
 
-var data = fs.readFileSync('mus.peg', 'utf-8');
+var data = fs.readFileSync('mus_parser.peg', 'utf-8');
 
 var parse = PEG.buildParser(data).parse;
 
