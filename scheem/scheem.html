@@ -38,6 +38,15 @@
       text-align: left;
       padding: 20px;
     }
+
+    a, a:visited {
+      text-decoration: none;
+      color: #0055AA;
+    }
+
+    a:hover {
+      color: blue;
+    }
   </style>
 </head>
 <body>
@@ -51,7 +60,7 @@
 </div>
 
 <div id="description">
-  <p>Welcome to my "Scheem" console. "Scheem" is a simplified version of Scheme, a language from the Lisp family.</p>
+  <p>Welcome to my "Scheem" console. "Scheem" is a simplified version of Scheme, a language from the Lisp family. This console is a playground to demonstrate my current working knowledge of interpreters and parsers.</p>
   <p>Commands are entered in prefix notation, meaning the operators come first. For example, (+ 1 2) evaluates to 1 + 2 = 3. Give it a try by pressing the "Run expression" button!</p>
   <p>Besides basic arithmetic, other operators include:</p>
   <p><strong>set!</strong> - This is how you declare variables. Example: (set! a 1). Now if you call a, the value is 1. The return value of a set! expression itself is 0.</p>
@@ -63,7 +72,9 @@
   <p><strong>car</strong> - Returns the first value in a list. Example: (car '(1 2 3)) returns 1.</p>
   <p><strong>cdr</strong> - The opposite of car, returns everything but the first value in a list. Example: (cdr '(1 2 3)) returns [2, 3].</p>
   <p><strong>begin</strong> - If you want to get fancier, use this to chain expressions. Example: (begin (set! a 1) (set! b (+ a 2)) (* b a)) will perform a = 1; b = a + 2; b * a = 3</p>
-  <p>
+  </br>
+  <p>If you liked this, check out my <a href="mus.html">Mus console</a> also!</p>
+  <p>And of course the awesome course from where I learned this stuff: <a href="http://nathansuniversity.com/">Nathan's University</a></p>
 </div>
 
 <script>
