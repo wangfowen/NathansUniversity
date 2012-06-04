@@ -6,6 +6,11 @@ if (typeof module !== 'undefined') {
     var assert = chai.assert;
 }
 
+var env1 = { bindings: {'x': 19}, outer: { } };
+var env2 = { bindings: {'y': 16}, outer: env1};
+var env3 = { bindings: {'x': 2}, outer: env2};
+var env4 = { bindings: {'x': 2, 'a': 1}, outer: { } }
+
 suite('quote', function() {
   test('a number', function() {
     assert.deepEqual(
@@ -25,10 +30,11 @@ suite('quote', function() {
       [1, 2, 3]
     );
   });
-  test('errors on multiple parameters', function() {
+  test('errors on wrong number of parameters', function() {
     assert.throws(function() {evalScheem(['quote', [1, 2, 3], 4], {})});
   });
 });
+
 suite('arithmetic', function() {
   test('two numbers', function() {
     assert.deepEqual(
@@ -67,6 +73,7 @@ suite('arithmetic', function() {
     );
   });
 });
+
 suite('if', function() {
   test('true', function() {
     assert.deepEqual(
@@ -93,21 +100,46 @@ suite('if', function() {
     );
   });
 });
+
 suite('set!', function() {
-  var env = {x:2, a:1}
   test('a number', function() {
-    evalScheem(['set!', 'a', 3], env);
-    assert.deepEqual(env["a"], 3);
+    evalScheem(['set!', 'a', 3], env4);
+    assert.deepEqual(env4.bindings["a"], 3);
   });
   test('an atom', function() {
-    evalScheem(['set!', 'a', ['quote', 'dog']], env);
-    assert.deepEqual(env["a"], 'dog');
+    evalScheem(['set!', 'a', ['quote', 'dog']], env4);
+    assert.deepEqual(env4.bindings["a"], 'dog');
   });
   test('a list', function() {
-    evalScheem(['set!', 'a', ["+", "x", 1]], env);
-    assert.deepEqual(env["a"], 3);
+    evalScheem(['set!', 'a', ["+", "x", 1]], env4);
+    assert.deepEqual(env4.bindings["a"], 3);
+  });
+  test("can't set unset variable", function() {
+    assert.throws(function() {evalScheem(['set!', 'b', 3], env4)});
   });
 });
+
+suite('define', function() {
+  test('a number', function() {
+    env4 = { };
+    evalScheem(['define', 'b', 3], env4);
+    assert.deepEqual(env4.bindings["b"], 3);
+  });
+  test('an atom', function() {
+    env4 = { bindings: {'x': 2, 'a': 1}, outer: { } };
+    evalScheem(['define', 'b', ['quote', 'dog']], env4);
+    assert.deepEqual(env4.bindings["b"], 'dog');
+  });
+  test('a list', function() {
+    env4 = { bindings: {'x': 2, 'a': 1}, outer: { } };
+    evalScheem(['define', 'b', ["+", "x", 1]], env4);
+    assert.deepEqual(env4.bindings["b"], 3);
+  });
+  test("can't define set variable", function() {
+    assert.throws(function() {evalScheem(['define', 'a', 3], env4)});
+  });
+});
+
 suite('begin', function() {
   test('numbers should return last one', function() {
     assert.deepEqual(
@@ -117,44 +149,81 @@ suite('begin', function() {
   });
   test('lists should evaluate correctly', function() {
     assert.deepEqual(
-      evalScheem(['begin', ['set!', 'x', 5], ['set!', 'x', ['+', 'y', 'x']], 'x'], {x:1, y:2}),
+      evalScheem(['begin', ['set!', 'x', 5], ['set!', 'x', ['+', 'y', 'x']], 'x'], 
+        { bindings: {'x':1, 'y':2}, outer: {} }),
       7
     );
   });
 });
-suite('=', function() {
-  test('true', function() {
-    assert.deepEqual(
-      evalScheem(['=', 4, 4], {}),
-      '#t'
-    );
-  });
-  test('false', function() {
-    assert.deepEqual(
-      evalScheem(['=', 4, 3], {}),
-      '#f'
-    );
-  });
-});
-suite('<', function() {
-  test('true', function() {
+
+suite('comparisons', function() {
+  test('< true', function() {
     assert.deepEqual(
       evalScheem(['<', 3, 4], {}),
       '#t'
     );
   });
-  test('false', function() {
+  test('< false', function() {
     assert.deepEqual(
       evalScheem(['<', 4, 3], {}),
       '#f'
     );
   });
+  test('= true', function() {
+    assert.deepEqual(
+      evalScheem(['=', 4, 4], {}),
+      '#t'
+    );
+  });
+  test('= false', function() {
+    assert.deepEqual(
+      evalScheem(['=', 4, 3], {}),
+      '#f'
+    );
+  });
+  test('> true', function() {
+    assert.deepEqual(
+      evalScheem(['>', 4, 3], {}),
+      '#t'
+    );
+  });
+  test('> false', function() {
+    assert.deepEqual(
+      evalScheem(['>', 4, 4], {}),
+      '#f'
+    );
+  });
+  test('<= true', function() {
+    assert.deepEqual(
+      evalScheem(['<=', 4, 4], {}),
+      '#t'
+    );
+  });
+  test('<= false', function() {
+    assert.deepEqual(
+      evalScheem(['<=', 4, 3], {}),
+      '#f'
+    );
+  });
+  test('>= true', function() {
+    assert.deepEqual(
+      evalScheem(['>=', 4, 3], {}),
+      '#t'
+    );
+  });
+  test('>= false', function() {
+    assert.deepEqual(
+      evalScheem(['>=', 3, 4], {}),
+      '#f'
+    );
+  });
 });
+
 suite('cons', function() {
   test('a number', function() {
     assert.deepEqual(
-      evalScheem(['cons', 1, ['quote', [2, 3]]], {}),
-      [1, 2, 3]
+      evalScheem(['cons', 1, 2], {}),
+      [1, 2]
     );
   });
   test('a list', function() {
@@ -164,10 +233,11 @@ suite('cons', function() {
     );
   });
 });
+
 suite('car', function() {
   test('a number', function() {
     assert.deepEqual(
-      evalScheem(['car', ['quote', [1, 2, 3]]], {}),
+      evalScheem(['car', 1], {}),
       1
     );
   });
@@ -178,17 +248,82 @@ suite('car', function() {
     );
   });
 });
+
 suite('cdr', function() {
   test('a number', function() {
     assert.deepEqual(
-      evalScheem(['cdr', ['quote', [1, 2, 3]]], {}),
-      [2, 3]
+      evalScheem(['cdr', 1], {}),
+      []
     );
   });
   test('a list', function() {
     assert.deepEqual(
       evalScheem(['cdr', ['quote', [[1, 2], 3, 4]]], {}),
       [3, 4]
+    );
+  });
+});
+
+suite('let-one', function() {
+  test('Variable reference in environment', function() {
+    assert.deepEqual(
+      evalScheem(['+', 'x', 'y'], env3), 
+      18
+    );
+  });
+  test('computed value', function() {
+    assert.deepEqual(
+      evalScheem(['let-one', 'x', ['+', 2, 2], 'x'], env3),
+      4
+    );
+  });
+  test('inner reference', function() {
+    assert.deepEqual(
+      evalScheem(['let-one', 'z', 7, 'z'], env3),
+      7
+    );
+  });
+  test('outer reference', function() {
+    assert.deepEqual(
+      evalScheem(['let-one', 'x', 7, 'y'], env3),
+      16
+    );
+  });
+});
+
+suite('functions', function() {
+  var always3 = function (x) { return 3; };
+  var identity = function (x) { return x; };
+  var plusone = function (x) { return x + 1; };
+  var env = {
+    bindings: {'always3': always3,
+               'identity': identity,
+               'plusone': plusone}, outer: { }};
+  test('one parameter simple', function() {
+    assert.deepEqual(
+      evalScheem(['plusone', ['always3', 5]], env), 
+      4
+    );
+  });
+  test('one parameter eval', function() {
+    assert.deepEqual(
+      evalScheem(['plusone', ['+', ['plusone', 2], ['plusone', 3]]], env),
+      8
+    );
+  });
+});
+
+suite('lambda', function() {
+  test('simple one parameter', function() {
+    assert.deepEqual(
+      evalScheem([['lambda-one', 'x', 'x'], 5], { }), 
+      5
+    );
+  });
+  test('eval one parameter', function() {
+    assert.deepEqual(
+      evalScheem([[['lambda-one', 'x', ['lambda-one', 'y', ['+', 'x', 'y']]], 5], 3], { }), 
+      8
     );
   });
 });

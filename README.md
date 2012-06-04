@@ -1,1 +1,1 @@
-Homework, assignments, and general coolness from the PL101 course on Nathan's University on creating your own programming language. Check it out at: http://nathansuniversity.com/
+Homework, assignments, and general coolness from the PL101 course on <a href="http://nathansuniversity.com/">Nathan's University<a/> on creating your own programming language.
