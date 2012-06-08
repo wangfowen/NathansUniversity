@@ -252,7 +252,7 @@ suite('car', function() {
 suite('cdr', function() {
   test('a number', function() {
     assert.deepEqual(
-      evalScheem(['cdr', 1], {}),
+      evalScheem(['cdr', ['quote', 1]], {}),
       []
     );
   });
@@ -264,40 +264,13 @@ suite('cdr', function() {
   });
 });
 
-suite('let-one', function() {
-  test('Variable reference in environment', function() {
-    assert.deepEqual(
-      evalScheem(['+', 'x', 'y'], env3), 
-      18
-    );
-  });
-  test('computed value', function() {
-    assert.deepEqual(
-      evalScheem(['let-one', 'x', ['+', 2, 2], 'x'], env3),
-      4
-    );
-  });
-  test('inner reference', function() {
-    assert.deepEqual(
-      evalScheem(['let-one', 'z', 7, 'z'], env3),
-      7
-    );
-  });
-  test('outer reference', function() {
-    assert.deepEqual(
-      evalScheem(['let-one', 'x', 7, 'y'], env3),
-      16
-    );
-  });
-});
-
 suite('functions', function() {
   var always3 = function (x) { return 3; };
-  var identity = function (x) { return x; };
   var plusone = function (x) { return x + 1; };
+  var add3 = function (x, y, z) { return x + y + z; };
   var env = {
     bindings: {'always3': always3,
-               'identity': identity,
+               'add3': add3,
                'plusone': plusone}, outer: { }};
   test('one parameter simple', function() {
     assert.deepEqual(
@@ -311,18 +284,42 @@ suite('functions', function() {
       8
     );
   });
+  test('multiple parameters simple', function() {
+    assert.deepEqual(
+      evalScheem(['add3', ['always3', 5], 2, 1], env), 
+      6
+    );
+  });
+  test('multiple parameter eval', function() {
+    assert.deepEqual(
+      evalScheem(['add3', ['+', ['plusone', 2], ['plusone', 3]], 1, 2], env),
+      10
+    );
+  });
 });
 
 suite('lambda', function() {
   test('simple one parameter', function() {
     assert.deepEqual(
-      evalScheem([['lambda-one', 'x', 'x'], 5], { }), 
+      evalScheem([['lambda', 'x', 'x'], 5], { }), 
       5
     );
   });
   test('eval one parameter', function() {
     assert.deepEqual(
-      evalScheem([[['lambda-one', 'x', ['lambda-one', 'y', ['+', 'x', 'y']]], 5], 3], { }), 
+      evalScheem([[['lambda', 'x', ['lambda', 'y', ['+', 'x', 'y']]], 5], 3], { }), 
+      8
+    );
+  });
+  test('simple multiple parameters', function() {
+    assert.deepEqual(
+      evalScheem([['lambda', ['x', 'y'], 'x'], 5, 6], { }), 
+      5
+    );
+  });
+  test('eval multiple parameters', function() {
+    assert.deepEqual(
+      evalScheem([['lambda', ['x', 'y'], ['+', 'x', 'y']], 5, 3], { }), 
       8
     );
   });
