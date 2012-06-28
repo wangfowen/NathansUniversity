@@ -8,74 +8,28 @@
   </script>
   <script src="scheem_interpreter.js"></script>
   <script src="scheem_parser.js"></script>
-  <style>
-    body {
-      text-align: center;
-      font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-      font-weight: 300;
-    }
-
-    #input {
-      width: 390px;
-      height: 20px;
-      padding: 5px;
-      margin-top: 100px;
-    }
-
-    #button {
-      display: block;
-      margin: 10px auto;
-    }
-
-    #output {
-      border: 1px solid #ccc;
-      width: 395px;
-      padding: 5px;
-      margin: auto;
-    }
-
-    #description {
-      text-align: left;
-      padding: 20px;
-    }
-
-    a, a:visited {
-      text-decoration: none;
-      color: #0055AA;
-    }
-
-    a:hover {
-      color: blue;
-    }
-  </style>
+  <link rel="stylesheet" type="text/css" href="scheem.css">
 </head>
 <body>
 
-<textarea id="input">(begin (define add-one (lambda x (+ x 1))) (add-one 2))</textarea>
+<p>Input:</p>
+<textarea id="input"></textarea>
 
-<input id="button" type="button" value="Run expression" />
-
+<input class="button" id="run" type="button" value="Run expression" />
+<p>Output:</p>
 <div id="output">
   <p>Output appears here</p>
 </div>
 
 <div id="description">
-  <p>Welcome to my "Scheem" console. "Scheem" is a simplified version of Scheme, a language from the Lisp family. This console is a playground to demonstrate my current working knowledge of interpreters and parsers.</p>
-  <p>Commands are entered in prefix notation, meaning the operators come first. For example, (+ 1 2) evaluates to 1 + 2 = 3. Give it a try by pressing the "Run expression" button!</p>
-  <p>Besides basic arithmetic, other operators include:</p>
-  <p><strong>define</strong> - This is how you declare variables. Example: (define a 1). Now if you call a, the value is 1. The return value of a define expression itself is 0.</p>
-  <p><strong>set!</strong> - This is how you update variables. Example: (set! a 2). If a were previously defined as something else, now if you call a, the value is 2. The return value of a set! expression itself is 0.</p>
-  <p><strong>lambda</strong> - This is how you declare a function. Example: (lambda (x y) (+ x y)). This creates a function which takes parameters x and y and returns x+y. If you call a define on it with a name, you can then call the defined name to use the function. Otherwise you can just pass the parameters after, as such: ((lambda x (+ x 1)) 2). This would return 3.</p>
-  <p>"<strong>=</strong>"" - The equality operator. Example: (= 1 2) tests if 1=2. If it does, it'll return #t, meaning true. If it's false (which it is), it'll return #f, meaning false. There's also <, >, <=, >= for testing other conditions.</p>
-  <p><strong>if</strong> - The if operator for doing conditional statements. Example: (if (= 1 1) 1 2). Tests if 1=1, if it's true (which it is), it'll return 1, if it's false, it'll return 2.</p>
-  <p><strong>quote</strong> - This can be shorthanded by a ' in front of an expression. It returns the expression as a literal. Example: (quote (1 2 3)) or '(1 2 3) return [1, 2, 3]. Use this when you want to use expressions in operations, like (set! a '(dog)) sets the variable a to "dog"</p>
-  <p><strong>cons</strong> - For concatenation. Example: (cons 1 '(2 3)) concatenates 1 to the front of [2, 3], resulting in [1, 2, 3].</p>
-  <p><strong>car</strong> - Returns the first value in a list. Example: (car '(1 2 3)) returns 1.</p>
-  <p><strong>cdr</strong> - The opposite of car, returns everything but the first value in a list. Example: (cdr '(1 2 3)) returns [2, 3].</p>
-  <p><strong>begin</strong> - If you want to get fancier, use this to chain expressions. Example: (begin (set! a 1) (set! b (+ a 2)) (* b a)) will perform a = 1; b = a + 2; b * a = 3</p>
+  <p>Welcome to my "Scheem" console. "Scheem" is a simplified version of Scheme, a language from the Lisp family. Click one of the examples or input some code to see it in action.</p>
+  <p>For the full list of possible commands, click <a href="instructions.html">here</a>.</p>
+  <div id="examples">
+    <input class="button" id="basic" type="button" value="Basic example" />
+    <input class="button" id="factorial" type="button" value="Factorial" />
+  </div>
   </br>
-  <p>If you liked this, also check out my <a href="mus">Mus console</a> and/or my <a href="https://github.com/wangfowen">github</a>.</p>
-  <p>And of course the awesome course from where I learned this stuff: <a href="http://nathansuniversity.com/">Nathan's University</a>!</p>
+  <p>If you liked this, check out the awesome course from where I learned this stuff: <a href="http://nathansuniversity.com/">Nathan's University</a>!</p>
 </div>
 
 <script>
@@ -84,13 +38,11 @@
   };
 
   $(function() {
-    $('#button').click(function() {
-        var user_text = $('#input').val();
+    $('#run').click(function() {
+        var user_text = '(begin ' + $('#input').val() + ')';
         $('#output').html('');
-        log_console('Your input is: "' + user_text + '"');
         try {
             var parsed = scheem.parse(user_text);
-            log_console('This parses into: ' + JSON.stringify(parsed));
             try {
                 var result = evalScheem(parsed, {});
                 log_console('Result: ' + JSON.stringify(result));
@@ -98,10 +50,19 @@
             catch(e) {
                 log_console('Eval Error: ' + e);
             }
-        }
-        catch(e) {
+        } catch(e) {
             log_console('Parse Error: ' + e);
         }
+    });
+
+    $('#basic').click(function() {
+      $('#input').val('(define add-one\n\t(lambda x (+ x 1)))\n;;This is a comment\n(add-one 2)');
+      $('#output').html('<p></p>');
+    });
+
+    $('#factorial').click(function() {
+      $('#input').val('(define factorial\n\t(lambda (n) (if (= n 1) 1 (* n (factorial (- n 1))))))\n(factorial 3)');
+      $('#output').html('<p></p>');
     });
   });
 </script>

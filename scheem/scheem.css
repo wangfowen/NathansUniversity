@@ -1,0 +1,44 @@
+body {
+  text-align: center;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 300;
+}
+
+#input {
+  width: 390px;
+  height: 60px;
+  padding: 5px;
+}
+
+#run {
+  display: block;
+  margin: 10px auto;
+}
+
+#output {
+  border: 1px solid #ccc;
+  width: 395px;
+  height: 50px;
+  padding: 5px;
+  margin: auto;
+}
+
+#description {
+  text-align: left;
+  padding: 20px;
+  width: 500px;
+  margin: auto;
+}
+
+a, a:visited {
+  text-decoration: none;
+  color: #0055AA;
+}
+
+a:hover {
+  color: blue;
+}
+
+#examples {
+  float: left;
+}

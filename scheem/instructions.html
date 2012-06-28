@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Scheem Live Demo</title>
+  <script src=
+    "https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js">
+  </script>
+  <script src="scheem_interpreter.js"></script>
+  <script src="scheem_parser.js"></script>
+  <link rel="stylesheet" type="text/css" href="scheem.css">
+</head>
+<body>
+<div id="description">
+  <p>Commands are entered in prefix notation, meaning the operators come first. For example, (+ 1 2) evaluates to 1 + 2 = 3.</p>
+  <p>Besides basic arithmetic, other operators include:</p>
+  <p><strong>define</strong> - This is how you declare variables. Example: (define a 1). Now if you call a, the value is 1. The return value of a define expression itself is 0.</p>
+  <p><strong>set!</strong> - This is how you update variables. Example: (set! a 2). If a were previously defined as something else, now if you call a, the value is 2. The return value of a set! expression itself is 0.</p>
+  <p><strong>lambda</strong> - This is how you declare a function. Example: (lambda (x y) (+ x y)). This creates a function which takes parameters x and y and returns x+y. If you call a define on it with a name, you can then call the defined name to use the function. Otherwise you can just pass the parameters after, as such: ((lambda x (+ x 1)) 2). This would return 3.</p>
+  <p>"<strong>=</strong>"" - The equality operator. Example: (= 1 2) tests if 1=2. If it does, it'll return #t, meaning true. If it's false (which it is), it'll return #f, meaning false. There's also <, >, <=, >= for testing other conditions.</p>
+  <p><strong>if</strong> - The if operator for doing conditional statements. Example: (if (= 1 1) 1 2). Tests if 1=1, if it's true (which it is), it'll return 1, if it's false, it'll return 2.</p>
+  <p><strong>quote</strong> - This can be shorthanded by a ' in front of an expression. It returns the expression as a literal. Example: (quote (1 2 3)) or '(1 2 3) return [1, 2, 3]. Use this when you want to use expressions in operations, like (set! a '(dog)) sets the variable a to "dog"</p>
+  <p><strong>cons</strong> - For concatenation. Example: (cons 1 '(2 3)) concatenates 1 to the front of [2, 3], resulting in [1, 2, 3].</p>
+  <p><strong>car</strong> - Returns the first value in a list. Example: (car '(1 2 3)) returns 1.</p>
+  <p><strong>cdr</strong> - The opposite of car, returns everything but the first value in a list. Example: (cdr '(1 2 3)) returns [2, 3].</p>
+  <p><strong>begin</strong> - If you want to get fancier, use this to chain expressions. Example: (begin (set! a 1) (set! b (+ a 2)) (* b a)) will perform a = 1; b = a + 2; b * a = 3</p>
+  <p><a href="scheem.html">Return to the console</a></p>
+</div>
+</body>
+</html>
