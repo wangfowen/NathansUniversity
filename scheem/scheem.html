@@ -8,7 +8,11 @@
   </script>
   <script src="scheem_interpreter.js"></script>
   <script src="scheem_parser.js"></script>
+  <script src="codemirror.js"></script>
+  <script src="scheme.js"></script>
+
   <link rel="stylesheet" type="text/css" href="scheem.css">
+  <link rel="stylesheet" href="codemirror.css">
 </head>
 <body>
 
@@ -38,8 +42,10 @@
   };
 
   $(function() {
+    var input = CodeMirror.fromTextArea(document.getElementById('input'));
+
     $('#run').click(function() {
-        var user_text = '(begin ' + $('#input').val() + ')';
+        var user_text = '(begin ' + input.getValue() + ')';
         $('#output').html('');
         try {
             var parsed = scheem.parse(user_text);
@@ -56,12 +62,12 @@
     });
 
     $('#basic').click(function() {
-      $('#input').val('(define add-one\n\t(lambda x (+ x 1)))\n;;This is a comment\n(add-one 2)');
+      input.setValue('(define add-one\n\t(lambda x (+ x 1)))\n;;This is a comment\n(add-one 2)');
       $('#output').html('<p></p>');
     });
 
     $('#factorial').click(function() {
-      $('#input').val('(define factorial\n\t(lambda (n) (if (= n 1) 1 (* n (factorial (- n 1))))))\n(factorial 3)');
+      input.setValue('(define factorial\n\t(lambda (n) (if (= n 1) 1 (* n (factorial (- n 1))))))\n(factorial 3)');
       $('#output').html('<p></p>');
     });
   });
